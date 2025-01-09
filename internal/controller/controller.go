@@ -3,30 +3,27 @@ package controller
 import (
 	"database/sql"
 	"errors"
+	"fastApplication/internal/model"
 	"fmt"
-	"simpleApplication/internal/apiserver/application"
-	"simpleApplication/internal/apiserver/core/model"
-	"simpleApplication/internal/apiserver/core/service"
 
 	"github.com/gin-gonic/gin"
 )
 
 type Controller struct {
-	application *application.Application
-	service     *service.Service
+	service Service
+}
+type Service interface {
+	ExecuteQuery(path string, req *model.Params) (*any, error)
+	GetListQueries(schemaName string) ([]*model.Query, error)
+	SetQueryRoutes(queryRoutes map[string]string)
 }
 
-func Init(application *application.Application, router *gin.Engine) error {
-	service, err := service.New(application)
-	if err != nil {
-		return err
-	}
+func RegisterRoutes(router *gin.Engine, service Service, schemaName string) error {
 	controller := &Controller{
-		application: application,
-		service:     service,
+		service: service,
 	}
 
-	listQuery, err := service.GetListQueries("public")
+	listQuery, err := controller.service.GetListQueries(schemaName)
 	if err != nil {
 		return err
 	}
@@ -63,7 +60,7 @@ func Init(application *application.Application, router *gin.Engine) error {
 		queryRoutes[method+path] = value.Query
 
 	}
-	service.SetQueryRoutes(queryRoutes)
+	controller.service.SetQueryRoutes(queryRoutes)
 
 	return nil
 }

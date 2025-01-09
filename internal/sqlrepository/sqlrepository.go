@@ -4,36 +4,36 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"simpleApplication/internal/apiserver/application"
-	"simpleApplication/internal/apiserver/core/model"
+
+	"fastApplication/internal/model"
 
 	_ "github.com/lib/pq"
 )
 
 type SqlRepository struct {
-	application *application.Application
 	db          *sql.DB
-	QueryRoutes map[string]string
+	queryRoutes map[string]string
 }
 
-func New(application *application.Application) (*SqlRepository, error) {
-	db, err := sql.Open("postgres", application.Config.DbConnectString)
+func New(dbConnectString string) (*SqlRepository, error) {
+	db, err := sql.Open("postgres", dbConnectString)
 	if err != nil {
 		return nil, err
 	}
 	return &SqlRepository{
-		application: application,
 		db:          db,
-		QueryRoutes: nil,
+		queryRoutes: nil,
 	}, nil
 }
-
+func (sr *SqlRepository) Close() error {
+	return sr.db.Close()
+}
 func (sr *SqlRepository) ExecuteQuery(path string, req *model.Params) (*any, error) {
 	j, err := json.Marshal(req)
 	if err != nil {
 		return nil, err
 	}
-	row := sr.db.QueryRow(sr.QueryRoutes[path], j)
+	row := sr.db.QueryRow(sr.queryRoutes[path], j)
 	if err := row.Scan(&j); err != nil {
 		return nil, err
 	}
@@ -74,7 +74,7 @@ func (sr *SqlRepository) GetListQueries(schemaName string) ([]*model.Query, erro
 	return listQueries, nil
 }
 func (sr *SqlRepository) SetQueryRoutes(queryRoutes map[string]string) {
-	sr.QueryRoutes = queryRoutes
+	sr.queryRoutes = queryRoutes
 }
 func (sr *SqlRepository) GetListTables(schemaName string) ([]*model.Table, error) {
 	tables := []*model.Table{}

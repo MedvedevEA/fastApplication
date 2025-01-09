@@ -1,4 +1,4 @@
-module simpleApplication
+module fastApplication
 
 go 1.22.1
 
