@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"fastApplication/internal/logger"
 	"fastApplication/internal/model"
 
 	_ "github.com/lib/pq"
@@ -15,7 +16,7 @@ type SqlRepository struct {
 	queryRoutes map[string]string
 }
 
-func New(dbConnectString string) (*SqlRepository, error) {
+func New(dbConnectString string, logger logger.Logger) (*SqlRepository, error) {
 	db, err := sql.Open("postgres", dbConnectString)
 	if err != nil {
 		return nil, err

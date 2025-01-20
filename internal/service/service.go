@@ -1,11 +1,13 @@
 package service
 
 import (
+	"fastApplication/internal/logger"
 	"fastApplication/internal/model"
 )
 
 type Service struct {
 	repository Repository
+	logger     logger.Logger
 }
 type Repository interface {
 	ExecuteQuery(path string, req *model.Params) (*any, error)
@@ -13,9 +15,10 @@ type Repository interface {
 	SetQueryRoutes(queryRoutes map[string]string)
 }
 
-func New(repository Repository) *Service {
+func New(repository Repository, logger logger.Logger) *Service {
 	return &Service{
 		repository: repository,
+		logger:     logger,
 	}
 }
 func (s *Service) ExecuteQuery(path string, req *model.Params) (*any, error) {

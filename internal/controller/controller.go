@@ -3,6 +3,7 @@ package controller
 import (
 	"database/sql"
 	"errors"
+	"fastApplication/internal/logger"
 	"fastApplication/internal/model"
 	"fmt"
 
@@ -11,6 +12,7 @@ import (
 
 type Controller struct {
 	service Service
+	logger  logger.Logger
 }
 type Service interface {
 	ExecuteQuery(path string, req *model.Params) (*any, error)
@@ -18,9 +20,10 @@ type Service interface {
 	SetQueryRoutes(queryRoutes map[string]string)
 }
 
-func RegisterRoutes(router *gin.Engine, service Service, schemaName string) error {
+func Init(router *gin.Engine, service Service, logger logger.Logger, schemaName string) error {
 	controller := &Controller{
 		service: service,
+		logger:  logger,
 	}
 
 	listQuery, err := controller.service.GetListQueries(schemaName)
