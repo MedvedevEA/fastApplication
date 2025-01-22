@@ -21,3 +21,7 @@
 go.work
 go.work.sum
 
+# my list
+/logs/*
+!/logs/readme.md
+/configs/fastApplication.env
