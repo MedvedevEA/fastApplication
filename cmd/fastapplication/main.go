@@ -21,13 +21,13 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer logFile.Close()
 	logger, err := logrus.New(config.LogLevel, os.Stdout, logFile)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer logger.Close()
 	//store
-	store, err := sqlrepository.New(config.DatabaseConnectString, logger)
+	store, err := sqlrepository.New(config.DbConnectString, logger)
 	if err != nil {
 		log.Fatal(err)
 	}
